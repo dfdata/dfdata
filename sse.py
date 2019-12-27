@@ -3,6 +3,7 @@ import json
 import time
 import datetime
 import csv
+import os
 
 #获取市场每日成交概况原始数据,默认股票市场
 #如获取2019年12月02日股票成交概况 get_market_json("2019-12-02") 
@@ -81,23 +82,65 @@ def json_parser(jsondata):
 def download_marketdata(startdate, enddate, market='stock'):
     date_current = datetime.datetime.strptime(startdate, "%Y-%m-%d")  
     date_end = datetime.datetime.strptime(enddate, "%Y-%m-%d")
-    data = [('date','productType','istVol','marketValue','negotiableValue','trdAmt','trdVol1','trdTm','profitRate','exchangeRate')] #结果列表,先加入表头
+    data_title = ('date','productType','istVol','marketValue','negotiableValue','trdAmt','trdVol1','trdTm','profitRate','exchangeRate')  #结果列的表头
+    data = []  #用于存储结果的列表
+    temp_size = 30  #设置获取到多少天数据，就存入临时文件
+    temp_count = 1   #temp_size计数器
+    filename = 'dayily_'+market+'_'+startdate+'_'+enddate  
+    temp_filename = 'temp_' + filename #临时数据文件
+    final_filename = filename + '.csv'  #最终数据文件
+    
+    
+    #先看临时文件最后一行数据，若有就设置为当前日期为最后一行的日期
+    try: 
+        with open(temp_filename, 'r') as f:  #打开文件
+            lines = f.readlines() #读取所有行
+            last_line = lines[-1] #取最后一行
+            lastdate = last_line[0:10] #最后一行日期
+            try:
+                date_current = datetime.datetime.strptime(lastdate, "%Y-%m-%d") + datetime.timedelta(days=1)
+            except:
+                print('临时文件没有数据')
+    except FileNotFoundError:    #没有临时文件，就创建一个
+        with open(temp_filename, 'a', newline='') as csvfile:
+            csv_writer = csv.writer(csvfile)
+            csv_writer.writerow(data_title)   #加入表头
+            
+    except Exception as e:    #其他错误
+        print(e)
+        
+    
     while date_current<=date_end:
         if date_current.isoweekday() != 6 and date_current.isoweekday() != 7 :    #星期六，星期天没数据，不用处理
             daydata_json = get_market_json(date_current)  #获取当天原始数据
             result = json_parser(daydata_json)   #提取数，保存到变量result
             data.extend(result)       #将处理后的数据，添加到data列表后面
             print(str(date_current)+'当天处理完成！')
+            temp_count += 1
             time.sleep(0.5)   #设置休眠时间，减小服务器压力
+            
+        #已获取到的天数，大于temp_size就保存到文件
+        if temp_count % temp_size == 0 :
+            with open(temp_filename, 'a', newline='') as csvfile:
+                csv_writer = csv.writer(csvfile)
+                csv_writer.writerows(data)
+            data = []   #保存到文件后，就将data列表清空
+            
+                       
         date_current+=datetime.timedelta(days=1)
         
     #print(data)
     
-    #将结果列表data保存到cvs中
-    filename = 'dayily_'+market+'_'+startdate+'_'+enddate+'.csv'
-    with open(filename, 'w', newline='') as csvfile:
-        csv_writer = csv.writer(csvfile)
-        csv_writer.writerows(data)
-
+    #将剩余结果data保存到cvs中
+    try: 
+        with open(temp_filename, 'a', newline='') as csvfile:
+            csv_writer = csv.writer(csvfile)
+            csv_writer.writerows(data)
+        os.rename(temp_filename, final_filename)  #保存完整后，将临时文件名改为最终文件名
+    except Exception as e:    #其他错误
+        print(e)
+   
+    print('下载完成！')
+    
 if __name__ == '__main__':
-    download_marketdata('2019-11-10','2019-11-30')
+    download_marketdata('1990-12-1','2019-12-27')
