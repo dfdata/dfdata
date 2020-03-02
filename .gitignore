@@ -1,0 +1,10 @@
+#忽略
+build/
+dfdata.egg-info/
+dist/
+
+#忽略jupyter文件
+.ipynb_checkpoints/
+
+#忽略其他
+test.py
