@@ -3,6 +3,12 @@ build/
 dfdata.egg-info/
 dist/
 
+#忽略编译文件夹
+*/__pycache__
+*/*/__pycache__
+*/*/*/__pycache__
+*/*/*/*/__pycache__
+
 #忽略jupyter文件
 .ipynb_checkpoints/
 
