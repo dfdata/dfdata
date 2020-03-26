@@ -12,11 +12,11 @@ Welcome to dfdata's documentation!
    
 Introduction
 ============
-This is the introduction of demo。
+dfdata用于下载金融数据，默认使用sqlite数据库保存数据。
 
 API
 ==================
-.. automodule:: run
+.. automodule:: dfdata.db_info
    :members:
 
 Indices and tables
