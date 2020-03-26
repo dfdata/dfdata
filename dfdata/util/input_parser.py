@@ -53,27 +53,33 @@ def db_name_read_parser(db_name):
     返回值：
     sqlite3的数据库连接，Connection
     """
-    if os.path.isfile(db_name):
-        try:
+    try:
+        if os.path.isfile(db_name):
             conn = sqlite3.connect(db_name)
             print("数据库{}连接成功".format(db_name))
             return conn
-        except Exception as e:
+    except Exception as e:   
             print(e)
             print('数据库连接出错！')
             sys.exit() 
-    else:
-        print(ERROR_MESSAGE)
-        sys.exit() 
-        
-    
-def end_date_parser(end_date):
+
+            
+def end_date_parser(end_date, str_tpye='%Y%m%d'):
     """
-    处理用户输入的tushare终止时间，
+    处理用户输入的终止时间，
     默认返回今天日期，格式如：'20200101'
+    -----
+    输入值：
+    end_date 输入要处理的日期字符串
+    tpye 字符串格式化类型，默认'%Y%m%d'
+    -----
+    返回值：
+    字符串
     """
+    
+    
     if end_date == '':        
         today = (datetime.datetime.utcnow() + datetime.timedelta(hours=8)) #获取现在北京时间，通过utc时间+8小时
-        today_str = today.strftime('%Y%m%d') #转化为字符串
+        today_str = today.strftime(str_tpye) #转化为字符串
         return today_str
     return end_date

@@ -15,9 +15,9 @@ pro = ts.pro_api()
 
 # -----------------------------------------------------------------------------
 # 期货合约表fut_basic，
-def save_ts_fut_basic(
+def save_futures_basic_ts(
     db_name='data/futures_ts.db',
-    table_name='fut_basic',
+    table_name='futures_basic',
 ):
     """
     保存期货合约表fut_basic，全部历史合约
@@ -45,15 +45,15 @@ def save_ts_fut_basic(
     print("合约数据已全部保存！")
 
 
-def read_ts_fut_basic():
+def read_futures_basic_ts():
     print('读取')
     
 # -----------------------------------------------------------------------------
 # 期货日线行情表 fut_daily
 
-def save_ts_fut_daily(
+def save_futures_daily_ts(
     db_name='data/futures_ts.db',
-    table_name='fut_daily', 
+    table_name='futures_daily', 
     start_date='19960101', 
     end_date=''
 ):
@@ -123,5 +123,5 @@ def save_ts_fut_daily(
     print("数据保存完成")
 
     
-def save_ts_fut_holding():
+def save_futures_holding_ts():
     print("下载fut_holding")

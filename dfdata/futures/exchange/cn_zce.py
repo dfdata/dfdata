@@ -44,7 +44,7 @@ def get_zce_daily(date=None, type="future"):
     #print("url={}\n xpath={}\n headers={}".format(url, tabel_xpath, my_headers)) 
     
     res = requests.get(url, headers=my_headers) 
-    if res.status_code = 404:
+    if res.status_code == 404:
         print('不存在')
         return
     res_elements = etree.HTML(res.content.decode('utf-8'))  #如果不以utf-8解码，中文会显示乱码
