@@ -12,29 +12,24 @@ dfdata文档
    
    start/index
    data/index
+   tool/index
    reference/index
    development/index
    
    
 简介
 ============
+
 dfdata用于下载金融数据，默认使用sqlite数据库保存数据。
 将常用的数据保存到本地的优点：
-对用户：
 
+* 不用重复从服务器获取数据
+* 减轻据服务器的压力
+* 使用稳定
 * 不受限制使用数据
 
-* 不用重复从服务器上调取
-
-对数据提供方：
-
-* 减轻据服务器的压力。
 
 
-API
-==================
-.. automodule:: dfdata.db_info
-   :members:
 
 Indices and tables
 ==================
