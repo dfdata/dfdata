@@ -6,3 +6,6 @@
    :caption: Table of contents:
    
    futures
+   stock/index
+   fund/index
+   
