@@ -2,3 +2,4 @@ Sphinx >= 2.4.4
 numpydoc
 recommonmark
 pandas
+pydata-sphinx-theme
