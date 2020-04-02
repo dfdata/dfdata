@@ -1,4 +1,4 @@
-Sphinx
+Sphinx >= 2.4.4
 numpydoc
 recommonmark
 pydata-sphinx-theme
