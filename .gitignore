@@ -11,6 +11,7 @@ dist/
 
 #忽略jupyter文件
 .ipynb_checkpoints/
+.ipynb
 
 #忽略其他
 test.py
