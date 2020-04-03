@@ -3,6 +3,7 @@
 # This file only contains a selection of the most common options. For a full
 # list see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
+# 参考：jupyterhub的docs设置 https://github.com/jupyterhub/jupyterhub/blob/master/docs/source/conf.py
 
 # -- Path setup --------------------------------------------------------------
 
@@ -23,6 +24,15 @@ author = 'eric'
 
 # The full version, including alpha/beta/rc tags
 release = '0.0.3'
+
+
+
+# Autopopulate version
+from os.path import dirname
+
+docs = dirname(dirname(__file__))
+root = dirname(docs)
+sys.path.insert(0, root)
 
 
 # -- General configuration ---------------------------------------------------
