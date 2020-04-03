@@ -84,13 +84,14 @@ html_theme = "pydata_sphinx_theme"
 
 html_logo = '_static/dfdata_logo.svg'
 
-'''
+
 html_theme_options = {
     "github_url": "https://github.com/Eric2827/dfdata",
     "twitter_url": "https://twitter.com",
-    "use_edit_page_button": True
+    # "use_edit_page_button": True   #在readthedocs构建不成功
 }
 
+'''
 html_context = {
     "github_user": "Eric2827",
     "github_repo": "dfdata",
