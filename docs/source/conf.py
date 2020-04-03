@@ -3,7 +3,13 @@
 # This file only contains a selection of the most common options. For a full
 # list see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
-# 参考：jupyterhub的docs设置 https://github.com/jupyterhub/jupyterhub/blob/master/docs/source/conf.py
+# 参考：
+# jupyterhub的docs
+# 设置：https://github.com/jupyterhub/jupyterhub/blob/master/docs/source/conf.py
+# 效果：https://jupyterhub.readthedocs.io/en/stable/index.html
+# binderhub的docs
+# 设置：https://github.com/jupyterhub/binderhub/blob/master/doc/conf.py
+# 效果：https://mybinder.readthedocs.io/en/latest/index.html
 
 # -- Path setup --------------------------------------------------------------
 
