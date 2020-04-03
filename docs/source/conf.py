@@ -84,6 +84,7 @@ html_theme = "pydata_sphinx_theme"
 
 html_logo = '_static/dfdata_logo.svg'
 
+'''
 html_theme_options = {
     "github_url": "https://github.com/Eric2827/dfdata",
     "twitter_url": "https://twitter.com",
@@ -96,7 +97,7 @@ html_context = {
     "github_version": "master",
     "doc_path": "docs",
 }
-
+'''
 
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -112,5 +113,6 @@ if on_rtd:
     # build rest-api, since RTD doesn't run make
     from subprocess import check_call as sh
 
-    sh(['make', 'html'], cwd=docs)
+    #sh(['make', 'html'], cwd=docs)
+    print("===============conf.py===================on_rtd==============")
 
