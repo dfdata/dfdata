@@ -4,14 +4,11 @@ dfdata.egg-info/
 dist/
 
 #忽略编译文件夹
-*/__pycache__
-*/*/__pycache__
-*/*/*/__pycache__
-*/*/*/*/__pycache__
+*__pycache__/
 
 #忽略jupyter文件
-.ipynb_checkpoints/
-.ipynb
+*.ipynb_checkpoints/
+忽略.ipynb
 
 #忽略其他
-test.py
+

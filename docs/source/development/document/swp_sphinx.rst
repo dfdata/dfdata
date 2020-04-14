@@ -8,13 +8,13 @@ Sphinx教程
 ---------------------------------
 
 使用pip安装
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 可以使用pip安装，如下::
 
     pip install -U sphinx
     
 使用docker安装
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Sphinx的官方docker镜像有两个：
 
@@ -38,12 +38,12 @@ Sphinx的官方docker镜像有两个：
 ---------------------------------
     
 编写内容
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 sphinx默认使用reStructuredText 
 
 
 构建网页
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 由sphinx-quickstart脚本创建的make.bat使生成网页更容易，仅需运行make html而不需要使用sphinx-build生成。如下::
 
@@ -58,11 +58,37 @@ sphinx默认使用reStructuredText
 ---------------------------------
     
 安装主题
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 主题设置
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+扩展
+---------------------------------
+
+常用内置扩展
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+autodoc
+~~~~~~~~~~~~~
+autodoc扩展能够提取源代码中的文档字符串(DocStrings)生成文档，文档字符串需要按reStructuredText格式编写，可以使用所有常用的Sphinx标记。一般搭配napoleon扩展一起使用。
+
+
+详细信息阅读：
+* https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html
+* https://www.sphinx.org.cn/usage/extensions/autodoc.html
+
+napoleon
+~~~~~~~~~~~~~
+napoleon扩展使Sphinx能够解析NumPy和Google风格的文档字符串。
+
+详细信息阅读：
+* https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html#module-sphinx.ext.napoleon
+* https://www.sphinx.org.cn/usage/extensions/napoleon.html
+
+第三方扩展
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 

@@ -11,7 +11,7 @@ setuptools.setup(
     description="Download financial data",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/Eric2827/DFdata",
+    url="https://github.com/Eric2827/dfdata",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",

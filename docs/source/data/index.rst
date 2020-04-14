@@ -4,7 +4,7 @@
 .. toctree::
    :maxdepth: 2
    
-   futures
+   futures/index
    stock/index
    fund/index
    

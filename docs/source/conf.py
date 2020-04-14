@@ -25,8 +25,8 @@ sys.path.insert(0, os.path.abspath('.'))
 # -- Project information -----------------------------------------------------
 
 project = 'dfdata'
-copyright = '2020, eric'
-author = 'eric'
+copyright = '2020, dfdata'
+author = 'dfdata'
 
 # The full version, including alpha/beta/rc tags
 release = '0.0.3'
@@ -49,7 +49,9 @@ sys.path.insert(0, root)
 # pydata_sphinx_theme 插件
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.napoleon',
     'sphinx.ext.autosummary',
+    'nbsphinx',
     'recommonmark'
 ]
 
@@ -67,8 +69,8 @@ language = 'zh_CN'
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = [
-    '**/.ipynb_checkpoints' ,    ## 忽略所有jupyter文件
-    '.ipynb_checkpoints/index-checkpoint.rst'
+    '**.ipynb_checkpoints' ,    ## 忽略所有jupyter文件
+    #'.ipynb_checkpoints/index-checkpoint.rst'
 ]
 
 

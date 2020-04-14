@@ -10,17 +10,34 @@ ERROR_MESSAGE = ("可能由于文件夹权限不够或输入错误！\n"
                  "db_name='../data/test.db' 表示上级目录下的data目录下建立test.db数据库")
 
 
-def db_name_save_parser(db_name):
+def Connection_from_db_name(
+    db_name,
+    is_in_save=True
+):
     """
     处理保存数据时用户输入的db_name    
     -----
-    输入值：
-    数据库地址名称，如：'data/futures_ts.db'   
+    参数：
+    db_name 数据库地址名称，如：'data/futures_ts.db'  
+    is_in_save 默认True，表示数据库名称用于保存，False表示数据库名称用于读取
     -----
     返回值：
     sqlite3的数据库连接，Connection
     """
-  
+    
+    #False表示数据库名称用于读取
+    if is_in_save == False:
+        try:
+            if os.path.isfile(db_name):
+                conn = sqlite3.connect(db_name)
+                print("数据库{}连接成功".format(db_name))
+                return conn
+        except Exception as e:   
+                print(e)
+                print('数据库连接出错！')
+                sys.exit()     
+    
+    # 数据库名称用于保存
     s = os.path.split(db_name)
     path = s[0]
     db = s[1]
@@ -43,28 +60,14 @@ def db_name_save_parser(db_name):
         
     return conn
 
-def db_name_read_parser(db_name):
-    """
-    处理读取数据时用户输入的db_name  
-    -----
-    输入值：
-    数据库地址名称，如：'data/futures_ts.db'
-    -----
-    返回值：
-    sqlite3的数据库连接，Connection
-    """
-    try:
-        if os.path.isfile(db_name):
-            conn = sqlite3.connect(db_name)
-            print("数据库{}连接成功".format(db_name))
-            return conn
-    except Exception as e:   
-            print(e)
-            print('数据库连接出错！')
-            sys.exit() 
 
+def check_table_name(table_name):
+
+    
+    return table_name
+    
             
-def end_date_parser(end_date, str_tpye='%Y%m%d'):
+def check_end_date(end_date, str_tpye='%Y%m%d'):
     """
     处理用户输入的终止时间，
     默认返回今天日期，格式如：'20200101'

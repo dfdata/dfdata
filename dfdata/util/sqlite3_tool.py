@@ -4,7 +4,7 @@ import pandas as pd
 import dfdata.util.input_parser as input_parser
 
 def db_info(db_name):
-    conn = input_parser.db_name_read_parser(db_name)
+    conn = input_parser.Connection_from_db_name(db_name,is_in_save=False)
     # 查询数据库文件大小
     db_size_mb = os.path.getsize(db_name)/1024/1024
     print("数据库{}简介信息如下：".format(db_name))
@@ -29,7 +29,7 @@ def db_info(db_name):
     conn.close()
 
 def db_drop_tabel(db_name,table_name):
-    conn = input_parser.db_name_read_parser(db_name)
+    conn = input_parser.Connection_from_db_name(db_name,is_in_save=False)
     c = conn.cursor()
     sql = 'drop table {}'.format(table_name)
     #print('sql = ' + sql)

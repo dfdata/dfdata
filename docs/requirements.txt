@@ -1,5 +1,5 @@
 Sphinx >= 2.4.4
-numpydoc
 recommonmark
-pandas
+nbsphinx
 pydata-sphinx-theme
+

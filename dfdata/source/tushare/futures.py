@@ -3,30 +3,37 @@ import time
 import sqlite3
 import pandas as pd
 import tushare as ts
-import dfdata.tushare.consts as consts
+import dfdata.source.tushare.consts as consts
 import dfdata.util.input_parser as input_parser
+from dfdata.util.source import Source
 pro = ts.pro_api()
+
+tushare_source = Source('tushare')
 
 # # 下载Tushare期货数据
 # 期货数据接口：https://tushare.pro/document/2?doc_id=134  
 # 默认保存期货数据库futures_ts.db  
 
-
-
 # -----------------------------------------------------------------------------
-# 期货合约表fut_basic，
-def save_futures_basic_ts(
-    db_name='data/futures_ts.db',
-    table_name='futures_basic',
+# 期货合约表futures_contract，
+def save_futures_contract(
+    db_name=None,
+    table_name=None,
 ):
     """
     保存期货合约表fut_basic，全部历史合约
     
     """
-    exchanges = list(consts.EXCHANGE_CODE_NAME_TS.keys())  #交易所列表，['CZCE', 'SHFE', 'DCE', 'CFFEX', 'INE'] 
+    # 如果没输入就设置为默认值
+    if db_name == None : db_name = tushare_source.db_name['futures_db_name']
+    if table_name == None : table_name = tushare_source.table_name['futures_contract']
+    #检查值
+    conn = input_parser.Connection_from_db_name(db_name)
+    table_name = input_parser.check_table_name(table_name)
+    print(db_name)
+    exchanges = list(consts.EXCHANGE_NAME.keys())  #交易所列表，['CZCE', 'SHFE', 'DCE', 'CFFEX', 'INE'] 
     count = 0  #表的行数
-    conn = input_parser.db_name_save_parser(db_name)
-
+    
     try:
         c = conn.cursor()
         c.execute('drop table {}'.format(table_name)) #删除数据库以前的fut_basic表
@@ -36,9 +43,9 @@ def save_futures_basic_ts(
     
     for exchange in exchanges:
         df = pro.fut_basic(exchange=exchange) 
-        print("获取到{}的{}行合约数据".format(consts.EXCHANGE_CODE_NAME_TS[exchange], len(df)))
-        df.to_sql("fut_basic", conn, index=False, if_exists="append")
-        print("{}的合约数据，已保存到数据库！".format(consts.EXCHANGE_CODE_NAME_TS[exchange]))
+        print("获取到{}的{}行合约数据".format(consts.EXCHANGE_NAME[exchange], len(df)))
+        df.to_sql(table_name, conn, index=False, if_exists="append")
+        print("{}的合约数据，已保存到数据库！".format(consts.EXCHANGE_NAME[exchange]))
     
     
     conn.close()   #关闭数据库连接
@@ -76,7 +83,7 @@ def save_futures_daily_ts(
     示例：
     
     """
-    exchanges = list(consts.EXCHANGE_CODE_NAME_TS.keys())  #交易所列表，['CZCE', 'SHFE', 'DCE', 'CFFEX', 'INE'] 
+    exchanges = list(consts.EXCHANGE_NAME.keys())  #交易所列表，['CZCE', 'SHFE', 'DCE', 'CFFEX', 'INE'] 
     end_date = input_parser.end_date_parser(end_date)
     print(end_date)
     print(type(end_date))
@@ -102,7 +109,7 @@ def save_futures_daily_ts(
         df = pro.trade_cal(exchange=exchange, start_date=start_date, end_date=end_date)
         df_set = set(df[df.is_open > 0 ]['cal_date'])
         trade_date_all = trade_date_all | df_set
-        print('该时段内，{}共有{}个交易日'.format(consts.EXCHANGE_CODE_NAME_TS[exchange], len(df_set)))
+        print('该时段内，{}共有{}个交易日'.format(consts.EXCHANGE_NAME[exchange], len(df_set)))
     print("要下载交易日数量："+str(len(trade_date_all)))
     #print(trade_date_all)
     

@@ -32,7 +32,7 @@ def save_trade_date_jq(
     示例：
     
     """
-    conn = input_parser.db_name_save_parser(db_name)
+    conn = input_parser.Connection_from_db_name(db_name)
     #聚宽数据从2005-01-01开始
     start_date = '2005-01-01'
     #今天日期

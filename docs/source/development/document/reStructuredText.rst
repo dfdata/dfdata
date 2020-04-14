@@ -14,7 +14,15 @@ reStructuredText（简写：RST、ReST或reST）,
 最先出现的符号为一级标题，相同符号为同等级标题，下一个出现的符号为它的子标题，依次为h1，h2，h3，h4，h5，h6。
 在相同符号中，有上划线标题的比没有上划线标题高一等级。
 虽然没有规定符号对应标题的等级，但按照一种常用的写法不容易出错。一般一篇文档使用到三级标题即可，太多容易混乱。
-可以按某一种格式下，纯文本内容如下::
+
+也可以自己固定使用一种表示方式，如:
+
+* =，有上划线，文章标题
+* -，用作节
+* ^，用作小节
+* ~，用作子小节
+
+使用如下::
 
     ================================
     文章标题 （一级标题 h1）
@@ -25,19 +33,25 @@ reStructuredText（简写：RST、ReST或reST）,
     ---------------------------------
 
     1.1第一小节 （三级标题 h3）
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     1.2第二小节 （三级标题 h3）
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    
+    1.2.1第二子小节 （四级级标题 h4）
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    1.2.2第二子小节 （四级级标题 h4）
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     2第二节 （二级标题 h2）
     ---------------------------------
 
     2.1第一小节 （三级标题 h3）
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     2.2第二小节 （三级标题 h3）
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     
 转化为HTML后，显示效果：
  
@@ -388,7 +402,7 @@ CSV表格，使用如下::
 
 转化为HTML后，显示效果：
      
-.. csv-table:: "2020年02月03日期货交易数据"
+.. csv-table:: 2020年02月03日期货交易数据
    :header: "品种月份", "昨结算", "今开盘"
 
    "AP005", 7392, 6895
@@ -433,16 +447,37 @@ http://example.com
 
 内部链接
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-更多信息参考 引用文档
+
 
 
 在sphinx中，内部链接使用特殊的规则。
 
+链接到指定文档，可以使用 ``:doc:`文件名``` 会自动生成链接到指定文档，指定文件的文件名可以有两种写法：
 
+* 相对路径，如果指定文档名称people.rst，为与该篇文档同一目录下，直接写文档名称： ``:doc:`people``` ，如果在上一级目录下，则使用： ``:doc:`../people``` 链接到people文档。
+* 绝对路径，绝对路径以整个文档首页目录为根目录，如：``:doc:`/people``` 表示链接到根目录下的people文档。
+
+链接的显示文字默认为指定文档的标题，如果要修改链接显示文字，使用 ``:doc:`链接显示文本 <文件名>```  表示。示例如下::
+
+    点击这个链接： :doc:`sphinx` 可以到sphinx教程页面。
+    
+    点击这个链接： :doc:`链接显示文本 <sphinx>` 可以到sphinx教程页面。
+    
+转化为显示效果如下：    
+
+点击这个链接： :doc:`sphinx` 可以到sphinx教程页面。
+
+点击这个链接： :doc:`链接显示文本 <sphinx>` 可以到sphinx教程页面。
+
+链接到整个文档任意位置，使用
 
 This is the text of the section.
 
 It refers to the section itself, see :ref:`my-reference-label`.
+
+更多信息阅读：
+* `restructuredtext文档：超链接 <https://docutils.sourceforge.io/docs/user/rst/quickref.html#hyperlink-targets>`_
+
 
 参考文献
 ---------------------------------
@@ -459,5 +494,6 @@ It refers to the section itself, see :ref:`my-reference-label`.
 ---------------------------------
 * `restructuredtext官网 <https://docutils.sourceforge.io/rst.html>`_
 * `restructuredtext文档：快速开始 <https://docutils.sourceforge.io/docs/user/rst/quickstart.html>`_
-* `restructuredtext文档：快速参考 <https://docutils.sourceforge.io/docs/user/rst/quickstart.html>`_
+* `restructuredtext文档：快速参考 <https://docutils.sourceforge.io/docs/user/rst/quickref.html>`_
 * `sphinx文档：restructuredtext入门 <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_
+* `Python开发者指南：编写Python文档 <https://devguide.python.org/documenting/>`_
