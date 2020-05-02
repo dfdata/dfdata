@@ -1,5 +1,3 @@
-#dfdata/futures/consts.py
-
 
 ZCE_DAILY_1_URL = 'http://www.czce.com.cn/cn/exchange/jyxx/hq/hq%s.html'
 ZCE_DAILY_2_URL = 'http://www.czce.com.cn/cn/exchange/%s/datadaily/%s.htm'

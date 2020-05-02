@@ -1,62 +1,76 @@
-# coding: utf-8
+#dfdata/source/tushare/futures.py
+
 import time
 import sqlite3
 import pandas as pd
-import tushare as ts
-import dfdata.source.tushare.consts as consts
-import dfdata.util.input_parser as input_parser
-from dfdata.util.source import Source
-pro = ts.pro_api()
+from dfdata.util.config import Config
+from dfdata.util.func_tool import func_time
+from dfdata.util.log import Log
 
-tushare_source = Source('tushare')
+pro = None
+def auth():
+    import tushare as ts
+    global pro
+    pro = ts.pro_api()
+
+tushare_config = Config('tushare')
 
 # # 下载Tushare期货数据
 # 期货数据接口：https://tushare.pro/document/2?doc_id=134  
 # 默认保存期货数据库futures_ts.db  
 
-# -----------------------------------------------------------------------------
-# 期货合约表futures_contract，
-def save_futures_contract(
-    db_name=None,
-    table_name=None,
-):
-    """
-    保存期货合约表fut_basic，全部历史合约
+
+@func_time
+def get_futures_date(start_date='19901001', end_date=''):
     
     """
-    # 如果没输入就设置为默认值
-    if db_name == None : db_name = tushare_source.db_name['futures_db_name']
-    if table_name == None : table_name = tushare_source.table_name['futures_contract']
-    #检查值
-    conn = input_parser.Connection_from_db_name(db_name)
-    table_name = input_parser.check_table_name(table_name)
-    print(db_name)
-    exchanges = list(consts.EXCHANGE_NAME.keys())  #交易所列表，['CZCE', 'SHFE', 'DCE', 'CFFEX', 'INE'] 
-    count = 0  #表的行数
+    在线获取Tushare交易日历
     
-    try:
-        c = conn.cursor()
-        c.execute('drop table {}'.format(table_name)) #删除数据库以前的fut_basic表
-        print("删除之前{}表".format(table_name))
-    except:
-        pass
+    返回DataFrame格式
     
+    数据接口：https://tushare.pro/document/2?doc_id=137
+    """
+    auth()
+    
+    #if start_date == '' : start_date='19901001'
+    exchanges = list(tushare_config.exchange['futures'].keys())
+    result = pd.DataFrame(columns=['date',])
     for exchange in exchanges:
+        df = pro.trade_cal(exchange=exchange, start_date=start_date, end_date=end_date)
+        #print(df.tail())
+        df = df.rename(columns={'is_open':exchange, 'cal_date':'date'})
+        df = df[['date', exchange]]
+        result = pd.merge(df,result,on='date',how='outer')
+    result = result.sort_values(by='date')
+    
+    return result
+
+
+@func_time
+def get_futures_contract():
+    """
+    在线获取Tushare所有期货合约
+    
+    返回DataFrame格式
+    
+    数据接口：https://tushare.pro/document/2?doc_id=135
+    """
+    auth()
+    
+    exchanges = tushare_config.exchange['futures']  #tushare期货交易所字典 
+    df_result =pd.DataFrame()
+    for exchange, exchange_name in exchanges.items() :
         df = pro.fut_basic(exchange=exchange) 
-        print("获取到{}的{}行合约数据".format(consts.EXCHANGE_NAME[exchange], len(df)))
-        df.to_sql(table_name, conn, index=False, if_exists="append")
-        print("{}的合约数据，已保存到数据库！".format(consts.EXCHANGE_NAME[exchange]))
+        print("获取到{}的{}行合约数据".format(exchange_name, len(df)))
+        df_result = pd.concat([df_result, df])
+    return df_result
+
     
-    
-    conn.close()   #关闭数据库连接
-    print("合约数据已全部保存！")
+@func_time    
+def get_futures_daily():
+    pass
 
 
-def read_futures_basic_ts():
-    print('读取')
-    
-# -----------------------------------------------------------------------------
-# 期货日线行情表 fut_daily
 
 def save_futures_daily_ts(
     db_name='data/futures_ts.db',
@@ -130,5 +144,3 @@ def save_futures_daily_ts(
     print("数据保存完成")
 
     
-def save_futures_holding_ts():
-    print("下载fut_holding")

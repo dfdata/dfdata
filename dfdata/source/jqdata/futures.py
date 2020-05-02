@@ -1,16 +1,62 @@
+#dfdata/source/jqdata/futures.py
+
 import datetime
 import time
 import pandas as pd
 import jqdatasdk as jq
 from dfdata.util import config
-import dfdata.util.input_parser as input_parser
-#从配置文件读取账号密码，登录jqdata
+from dfdata.util.func_tool import func_time
 
-user = config.get_config('jqdata','id')
-password = config.get_config('jqdata','password')
-jq.auth(user, password)
-print('---登录jqdata----')
+# 在get函数中调用
+# 防止读取本地数据时也进行认证
+def auth(): 
+    #从配置文件读取账号密码，登录jqdata
+    user = config.get_config('jqdata','id')
+    password = config.get_config('jqdata','password')
+    jq.auth(user, password)
+    print('---登录jqdata----')
 
+@func_time
+def get_futures_date(start_date='2005-01-01', end_date=''):
+    """
+    在线获取jqdata交易日历
+    
+    返回DataFrame格式
+    
+    数据接口：https://www.joinquant.com/help/api/help?name=JQData#get_trade_days-获取指定范围交易日
+    jqdata数据从2005-01-01开始
+    
+    """
+    auth()
+    
+    if start_date < '2005-01-01' : start_date='2005-01-01'
+    trade_date_Series = jq.get_trade_days(start_date=start_date, end_date=end_date)
+    df = pd.DataFrame(trade_date_Series,columns=['date'])
+    df['is_open'] = 1
+    return df
+ 
+    
+@func_time
+def get_futures_contract():
+    """
+    在线获取jqdata期货合约表
+    
+    返回DataFrame格式
+    
+    数据接口：https://www.joinquant.com/help/api/help?name=JQData#get_all_securities-获取所有标的信息
+    """
+    auth()
+    
+    df_result = jq.get_all_securities(['futures'])
+    df_result = df_result.reset_index()
+    df_result = df_result.rename(columns={"index":"code",})
+    df_result["start_date"] = df_result["start_date"].apply(lambda x: x.strftime('%Y-%m-%d'))
+    df_result["end_date"] = df_result["end_date"].apply(lambda x: x.strftime('%Y-%m-%d'))
+   
+    return df_result
+
+
+    
 def save_trade_date_jq(
     db_name='data/futures_jq.db',
     table_name='futures_trade_date', 

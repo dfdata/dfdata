@@ -1,4 +1,1 @@
-from dfdata.source.tushare.futures import (
-    save_futures_contract,
-    
-)
+from dfdata.source.tushare import futures

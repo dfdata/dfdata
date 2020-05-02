@@ -2,7 +2,7 @@ import requests
 import lxml
 from lxml import etree
 import pandas as pd
-from dfdata.futures import consts as cs
+from dfdata.source.collect.futures import consts as cs
 
 """
 郑州商品交易所官网：http://www.czce.com.cn/

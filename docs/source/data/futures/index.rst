@@ -10,9 +10,9 @@
 
     futures_product; 期货品种表; save_futures_product(); read_futures_product();
     futures_contract; 期货合约表; save_futures_contract(); read_futures_contract(); tushare, jqdata
-    futures_date; 期货交易日期表; save_futures_date(); read_futures_date(); tushare, jqdata
+    futures_date; 期货日历表; save_trade_cal(); read_trade_cal(); tushare, jqdata
     futures_daily; 期货日线表; save_futures_daily(); read_futures_daily(); tushare, jqdata
-    futures_min; 期货分钟表; save_futures_daily(); read_futures_daily();  jqdata
+    futures_min; 期货分钟表; save_futures_daily(); read_futures_daily(); jqdata
 
 
 期货数据保存时，默认的数据库名称为：
@@ -31,4 +31,7 @@
     :maxdepth: 2
 
     futures_contract
+    futures_product
+    futures_exchange
+    futures_date
     futures_daily
