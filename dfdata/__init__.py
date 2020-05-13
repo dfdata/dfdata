@@ -17,6 +17,8 @@ from dfdata.futures import (
     read_futures_contract,
     save_futures_date,
     read_futures_date,
+    save_futures_daily,
+    read_futures_daily,
     
 )
 

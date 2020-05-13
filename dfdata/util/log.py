@@ -57,29 +57,50 @@ class Log():
         
     
     def debug(self, message,):
-        'debug等级：调试时候出输出信息'
+        """
+        debug函数：调试时候出输出信息
+        
+        在log等级为'debug'中显示
+        """
         level = self.level
         
         if level in ['debug']:
             head_str = self.get_head_str(level)
             print(head_str + str(message))
 
+            
     def info(self, message, ):
-        'info等级：详细输出信息'
+        """
+        info函数：详细输出信息
+        
+        在log等级为'info', 'debug'中显示
+        """        
         level = self.level
         
         if level in ['info', 'debug']:
             head_str = self.get_head_str(level)
             print(head_str + str(message))
 
+            
     def normal(self, message,):
-        'normal：详细输出信息'
+        """
+        normal函数：普通输出信息
+        
+        在log等级为'normal', 'info', 'debug'中显示
+        """   
         level = self.level
-        head_str = self.get_head_str(level)
-        print(head_str + str(message))    
+        
+        if level in ['normal', 'info', 'debug']:
+            head_str = self.get_head_str(level)
+            print(head_str + str(message))    
 
+            
     def warning(self, message, ):
-        'warning等级：警告时候输出信息'
+        """
+        warning函数：警告时候输出信息
+        
+        任何时候都输出
+        """
         level = self.level
         head_str = self.get_head_str(level)
         
@@ -87,8 +108,13 @@ class Log():
         message = '\033[1;30;43m' + head_str + prefix + str(message) + '\033[0m' #设置字体为黄色高亮
         print(message)    
 
+        
     def error(self, message,):
-        'error等级：错误时候输出信息'
+        """
+        error等级：错误时候输出信息
+        
+        任何时候都输出
+        """        
         level = self.level
         head_str = self.get_head_str(level)
         
@@ -109,7 +135,11 @@ class Log():
             if key == 'today' or key == 'today_str':
                 result = "今天日期：{}".format(value)
             if key == 'log' or key == 'log_level' :
-                result = "当前log等级：{}".format(value)
+                result = "当前log等级：log={}".format(value)
+            if key == 'start_date' :
+                result = "开始时间：start_date={}".format(value)
+            if key == 'end_date' :
+                result = "结束时间：end_date={}".format(value)
                 
             log_function(self, result)
 

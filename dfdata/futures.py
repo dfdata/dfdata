@@ -1,5 +1,8 @@
+#dfdata/futures.py
+
 import importlib
 import datetime
+import time
 import pandas as pd
 from dfdata.util.config import KeyWords
 import dfdata.util.db_tool as db_tool
@@ -9,9 +12,6 @@ from dfdata.util.func_tool import func_time
 
 #保存save_开头函数 ，调用数据源模块在线获取get_开头函数
 #本地读取read_开头函数，调用数据源模块本地读取read_开头函数
-
-
-
 
 
 ################################################################################
@@ -54,6 +54,9 @@ def save_futures_date(
     log_level = my_keywords['log']
     log = Log(log_level) #初始化log等级
     log.standard('normal', db=db, table=table, today=today_str) #打印参数
+    
+    #查询参数
+    trade_date_name = 'trade_date'
   
     conn = db_tool.connection_from_db_name(db, save=True)
    
@@ -61,7 +64,8 @@ def save_futures_date(
     last_date_in_table_str=''
     next_date_in_table_str=''
     try:
-        sql = "select date from {} order by date desc limit 1;".format(table)
+        sql = "select {filed_name} from {table_name} order by {filed_name} desc limit 1;".format(filed_name=trade_date_name, table_name=table)
+        log.debug("sql: " + sql)
         c = conn.cursor()
         result = c.execute(sql)
         last_dates = result.fetchone()
@@ -88,71 +92,9 @@ def save_futures_date(
         
     conn.close()
     
-
-
-@func_time   
-def read_futures_date(
-    source,
-    **keywords
-):
-    """   
-    本地读取期货日期表
-    
-    输入数据源，默认读取全部。
-
-    Parameters：
-        source (str): 数据源名称
-        db (str): 数据库名称
-        start_date: 
-        end_date: 
-        
-    Returns:
-        返回DataFrame格式的交易日
-        
-    See Also：
-        save_futures_date()
-        
-    Notes:
-        笔记
-        
-    Examples:
-        read_futures_date("tushare")
-    """
-    
-    #导入与数据源相应模块
-    module_source_name = "dfdata.source."+source
-    module_source = importlib.import_module(module_source_name)
-    
-    #输入参数和默认参数
-    my_keywords = KeyWords(keywords, source_kind=source, data_kind='futures', table='futures_date')
-    db =  my_keywords["db"]
-    table =  my_keywords["table"]
-    today_str = my_keywords['today']
-    start_date = my_keywords['start_date']
-    end_date = my_keywords['end_date']
-    fields = my_keywords['fields']
-    is_open = my_keywords['is_open']
-    sql = my_keywords['sql']
-    log_level = my_keywords['log']
-    log = Log(log_level) #初始化log等级
-    keywords['log'] = log
-    log.standard('info', db=db, table=table, today=today_str, log_level=log_level)
-
-    conn = db_tool.connection_from_db_name(db)
-    
-    if log_level in ['info', 'debug']: 
-        db_tool.db_info(db, table=table, log_level=log_level)
-    
-    #数据库中获取数据
-    if sql == None : #如果没输入sql语句，其他参数有效
-        sql = "select {} from {} where date >= '{}' and  date <= '{}'".format(fields, table,start_date,end_date)
-    log.info("sql语句："+sql)
-    df = pd.read_sql_query(sql, conn)
-    conn.close()
-         
-    return df    
-    
-    
+#函数，本地读取期货日期表   
+read_futures_date = db_tool.return_function_read_data_in_db(data_kind='futures', data_table='futures_date')
+  
     
 ################################################################################
 ### 期货合约表  futures_contract
@@ -230,56 +172,12 @@ def save_futures_contract(
     
     db_tool.db_info(db, table=table)    
     
-@func_time      
-def read_futures_contract(
-    source,
-    **keywords      
-):
-    """   
-    读取期货合约表
-    
-    Parameters:
-        code (str): 合约代码，默认None
-        exchange (str): 交易所代码，默认None
-    
-    """   
-    
-    #输入参数和默认参数
-    my_keywords = KeyWords(keywords, source_kind=source, data_kind='futures', table='futures_contract')
-    db =  my_keywords["db"]
-    table =  my_keywords["table"]
-    today_str = my_keywords['today']
-    log_level = my_keywords['log']
-    log = Log(log_level) #初始化log等级
-    
-    #函数查询
-    start_date = my_keywords['start_date']
-    end_date = my_keywords['end_date']
-    fields = my_keywords['fields']
-    code = my_keywords['code'] 
-    exchange = my_keywords['exchange']
-    limit = my_keywords['limit']
-    sql = my_keywords['sql']
-
-    #打印参数
-    log.standard('info', db=db, table=table, today=today_str, log_level=log_level) 
-
-    conn = db_tool.connection_from_db_name(db)
-    
-    if log_level in ['info', 'debug']: 
-        db_tool.db_info(db, table=table, log_level=log_level)
-        
-    where = db_tool.sql_where(has_where=True, operator='=', code=code, exchange=exchange)
-    sql = db_tool.get_sql(sql=sql, fields=fields, table=table, where=where, limit=limit, log_level=log_level)
-    
-    df = pd.read_sql_query(sql, conn)
-    
-    conn.close()
-    return df   
+#读取期货合约表函数
+read_futures_contract = db_tool.return_function_read_data_in_db(data_kind='futures', data_table='futures_contract')
 
 
 ################################################################################
-### 期货日线表  futures_daily
+### 期货日行情表  futures_daily
 ################################################################################
 
 @func_time
@@ -299,25 +197,138 @@ def save_futures_daily(
     today_str = my_keywords['today']
     start_date = my_keywords['start_date']
     end_date = my_keywords['end_date']
+    sleep_time = my_keywords['sleep_time']
     log_level = my_keywords['log']
     log = Log(log_level) #初始化log等级
     keywords['log'] = log
-    log.standard('normal', db=db, table=table, today=today_str) #打印参数
+    log.standard('normal', db=db, table=table, today=today_str, start_date=start_date, end_date=end_date) #打印参数
     log.info('log_level:'+log_level)
      
-    #要下载的交易日集合
-    all_trade_date_set = set()  
-    all_trade_date = read_futures_date(source=source, db=db, table='futures_date', start_date=start_date,end_date=end_date)
+    #要下载的交易日集合 all_trade_date_set = set()  
+    #先更新日期表 save_futures_date  
+    save_futures_date(source, db=db, log='warning') #log等级设置为warning，普通打印都不会显示
+    all_trade_date = read_futures_date(source,  db=db, exchange='CZCE', start_date=start_date, end_date=end_date, is_open=1)
+    all_trade_date_set = set(all_trade_date['trade_date'])
+    log.normal("一共{}交易日的日行情数据需要下载".format(len(all_trade_date_set)))
    
+    #数据库已有
+    conn = db_tool.connection_from_db_name(db)   
     
-    conn = db_tool.connection_from_db_name(db)      
     #数据库已有日期集合
     try:
-        sql = "select date from {} ;".format(table_name)
-        df_date = pd.read_sql_query(sql, conn) #获取数据库中date列
-        date_in_db_set = set(df_trade_data['trade_date'])  #数据库中已有日期集合
-        log.normal("数据库中已有{}天日行情数据："+str(len(trade_date_in_db)))
+        #read_futures_daily()
+        trade_date_in_db = read_futures_daily(source, db=db, table=table, fields='trade_date', start_date=start_date, end_date=end_date,)
+        trade_date_in_db_set = set(trade_date_in_db['trade_date'])
+        log.normal("数据库中已有{}天日行情数据："+str(len(trade_date_in_db_set))) 
     except:
-        date_in_db_set = set()  #如果数据表不存在，就设置已有日期为空集合
+        trade_date_in_db_set = set() #如果数据表不存在，就设置已有日期为空集合
+        log.normal("数据库中没有日行情数据。")
+        
+    """
+    #直接查询
+    try:
+        sql = "select trade_date from {} WHERE start_date >= '{}' and end_date <= '{}';".format(table_name, start_date, end_date)
+        df_date = pd.read_sql_query(sql, conn) #获取数据库中date列
+        trade_date_in_db_set = set(df_trade_data['trade_date'])  #数据库中已有日期集合
+        log.normal("数据库中已有{}天日行情数据："+str(len(trade_date_in_db_set)))
+    except:
+        trade_date_in_db_set = set()  #如果数据表不存在，就设置已有日期为空集合
         log.normal("数据库中没有日行情数据。")    
+    """
+    
+    #未完成的下载交易日
+    trade_date_unfinished = list(all_trade_date_set - trade_date_in_db_set)  
+    #下载列表倒序，最近日期比之前日期更常用
+    trade_date_unfinished.sort(reverse = True)
+    log.normal("未完成下载的交易日数量："+str(len(trade_date_unfinished)))
+
+    for trade_date in trade_date_unfinished: #如果集合中，有要下载的交易日
+         #调用模块相应函数，获取所有期货合约
+        df = module_source.futures.get_futures_daily(trade_date=trade_date)
+        log.normal("{} 当天获取到{}行数据。".format(trade_date, str(len(df))))
+        
+        df.to_sql(table, conn, index=False, if_exists="append")
+        
+        time.sleep(sleep_time) #休息0.5s，因为限制1分钟120次
+        
+    conn.close()
+    log.normal("日线行情数据保存完成。")        
+    
+    db_tool.db_info(db, table=table)
+
+#读取期货日线表函数  futures_daily
+read_futures_daily = db_tool.return_function_read_data_in_db(data_kind='futures', data_table='futures_daily')
+
+
+################################################################################
+### 期货分钟行情表  futures_min
+################################################################################
+@func_time
+def save_futures_min(
+    source,
+    **keywords
+):  
+    #导入与数据源相应模块
+    module_source_name = "dfdata.source."+source
+    module_source = importlib.import_module(module_source_name)   
+    
+    #输入参数和默认参数
+    my_keywords = KeyWords(keywords, source_kind=source, data_kind='futures', table='futures_min')
+    db =  my_keywords["db"]
+    table =  my_keywords["table"]
+    today_str = my_keywords['today']
+    start_date = my_keywords['start_date']
+    end_date = my_keywords['end_date']
+    sleep_time = my_keywords['sleep_time']
+    log_level = my_keywords['log']
+    log = Log(log_level) #初始化log等级
+    keywords['log'] = log
+    log.standard('normal', db=db, table=table, today=today_str, start_date=start_date, end_date=end_date) #打印参数
+    log.info('log_level:'+log_level) 
+    
+    code =  my_keywords["code"]
+    
+    # 最后一个可能在当天没更新完整，单独更新
+    # 
+    try:
+        sql = 'select * from futures_daily where trade_date = (select max(trade_date) from futures_daily)'
+        df_last_date = da.read_futures_daily(source, db=db, table=table,sql=sql)
+    except:
+        pass
+    
+    #要下载的交易日集合
+    all_trade_date = read_futures_date(source,  db=db, exchange='CZCE', start_date=start_date, end_date=end_date, is_open=1)
+    all_trade_date_set = set(all_trade_date['trade_date'])   
+    print("要下载交易日数量："+str(len(trade_date_all)))
+       
+    #数据库futures_min表code已有日期集合
+    try:
+        trade_date_in_db = read_futures_min(source, db=db, table=table, fields='trade_date', code=code)
+        trade_date_in_db_set = set(trade_date_in_db['trade_date'])
+        log.normal("数据库中已有{}天日行情数据："+str(len(trade_date_in_db_set))) 
+    except:
+        trade_date_in_db_set = set() #如果数据表不存在，就设置已有日期为空集合
+        log.normal("数据库中没有日行情数据。")    
+    
+    #未完成的下载交易日
+    trade_date_unfinished = trade_date_all - trade_date_in_db      
+    print("未完成的下载交易日："+str(len(trade_date_unfinished)))
+    unfinished_dates_sorted = list(trade_date_unfinished).sort(reverse=True) 
+    
+    for trade_date in trade_date_unfinished:    
+         #调用模块相应函数，获取所有期货合约
+        df = module_source.futures.get_futures_daily(trade_date=trade_date)
+        log.normal("{} 当天获取到{}行数据。".format(trade_date, str(len(df))))        
+        df.to_sql(table, conn, index=False, if_exists="append")    #存储到数据库  
+        time.sleep(sleep_time)   #休息0.5s，因为限制1分钟120次    
+        
+    conn.close()
+    print("数据保存完成")    
+   
+
+#读取期货日线表函数  futures_daily
+read_futures_min = db_tool.return_function_read_data_in_db(data_kind='futures', data_table='futures_min')
+
+
+
     

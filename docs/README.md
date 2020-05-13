@@ -35,7 +35,7 @@ IFrame(src='https://www.baidu.com', sandbox="allow-scripts", width=1000, height=
 
 
 ## 服务器上显示
-在docs文件夹下，建立dedeserver.py文件，写如下代码，启动一个简单的web服务器。
+在docs文件夹下，建立server.py文件，写如下代码，启动一个简单的web服务器。
 ```
 import sys
 import os
@@ -66,3 +66,5 @@ print("Serving HTTP on port 8081...")
 
 然后启动web服务器，浏览器中打开ip:8081即可看到文档：
  `python server.py`
+ 
+## 使用web服务器软件Nginx部署

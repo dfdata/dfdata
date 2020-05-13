@@ -4,15 +4,15 @@
 期货数据保存在如下数据表中：
 
 .. csv-table:: 期货数据表
-    :header: "数据表", "名称", "保存函数", "读取函数", "支持数据源"
-    :widths: 40, 60, 60, 60, 60
+    :header: "数据表", "名称", "保存函数", "读取函数"
+    :widths: 40, 60, 60, 60
     :delim: ; 
 
-    futures_product; 期货品种表; save_futures_product(); read_futures_product();
-    futures_contract; 期货合约表; save_futures_contract(); read_futures_contract(); tushare, jqdata
-    futures_date; 期货日历表; save_trade_cal(); read_trade_cal(); tushare, jqdata
-    futures_daily; 期货日线表; save_futures_daily(); read_futures_daily(); tushare, jqdata
-    futures_min; 期货分钟表; save_futures_daily(); read_futures_daily(); jqdata
+    futures_product; 期货品种表; save_futures_product; read_futures_product
+    futures_contract; 期货合约表; save_futures_contract; read_futures_contract
+    futures_date; 期货日历表; save_futures_date; read_futures_date
+    futures_daily; 期货日线表; save_futures_daily; read_futures_daily
+    futures_min; 期货分钟表; save_futures_daily; read_futures_daily
 
 
 期货数据保存时，默认的数据库名称为：
