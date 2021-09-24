@@ -37,6 +37,9 @@ class Log():
             level = Config.log_level
             return level
         else:
+            if level not in ['info', 'debug', 'warning', 'error', 'normal']:
+                level = 'normal'   #log_level不为这5中等级，初始化为'normal'
+                #print("log参数错误，已设置为'normal',可选值5个：'debug'，'info'，'normal'，'warning'，'error'。")
             return level
 
     #获取输出头部信息

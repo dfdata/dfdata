@@ -4,13 +4,15 @@ import datetime
 import time
 import pandas as pd
 import jqdatasdk as jq
-from dfdata.util import config
+from dfdata.source.jqdata import default_config
+from dfdata.util.config import get_config
 from dfdata.util.func_tool import func_time
-from dfdata.futures import read_futures_contract
+from dfdata.read_data import read_futures_basic
+from dfdata.save_data import save_futures_basic
 
 #从配置文件读取账号密码，登录jqdata
-user = config.get_config('jqdata','id')
-password = config.get_config('jqdata','password')
+user = get_config('jqdata','id')
+password = get_config('jqdata','password')
 jq.auth(user, password)
 print('---登录jqdata----')
     
@@ -38,11 +40,13 @@ def get_futures_date(start_date='2005-01-01', end_date=''):
     if start_date < '2005-01-01' : start_date='2005-01-01'
     trade_date_Series = jq.get_trade_days(start_date=start_date, end_date=end_date)
     df = pd.DataFrame(trade_date_Series,columns=['trade_date'])
+    for exchange in [ 'CZCE', 'SHFE', 'DCE', 'CFFEX',]:
+        df[exchange] = 1
     return df
  
     
 @func_time
-def get_futures_contract():
+def get_futures_basic():
     """
     在线获取jqdata期货合约表
     
@@ -77,18 +81,23 @@ def get_futures_daily(trade_date):
     
     """   
     
-    #获取一天数据
+    print('正在下载：', trade_date, '日期的日行情')
     
-    sql = "SELECT code FROM futures_contract where start_date <= '{}' and end_date >= '{}' ".format(trade_date, trade_date)
-    df_codes = read_futures_contract('jqdata', sql=sql, ) 
-    codes = list(df_codes['code'])    #当天期货列表
+    #获取一天数据
+    try:
+        sql = "SELECT code FROM futures_basic where start_date <= '{}' and end_date >= '{}' ".format(trade_date, trade_date)
+        df_codes = read_futures_basic('jqdata', sql=sql, ) 
+        codes = list(df_codes['code'])    #当天期货列表
+    except:
+        save_futures_basic('jqdata') 
     
     df = jq.get_price(
         codes, 
         start_date=trade_date,
         end_date=trade_date,
         frequency='daily', 
-        fields=['open', 'close', 'low', 'high', 'volume', 'money', 'factor', 'high_limit','low_limit', 'avg', 'pre_close', 'paused', 'open_interest'])
+        fields=['open', 'close', 'low', 'high', 'volume', 'money', 'factor', 'high_limit','low_limit', 'avg', 'pre_close', 'paused', 'open_interest'],
+        panel=False)
     
     if len(codes) != len(df) :
         raise Exception('{}当天期货获取不完整，期货{}个，获取到{}行'.format(trade_date, len(codes), len(df)))
@@ -112,20 +121,27 @@ def get_futures_min(trade_date, code):
     地址：https://www.joinquant.com/help/api/help?name=JQData#get_price-获取行情数据
     
     """   
+    print("参数：trade_date={}，code={}".format(trade_date, code))
     #获取一个合约一天分钟行情数据
     df = jq.get_price(
         code,
         start_date=trade_date,
         end_date=datetime.datetime.strptime(trade_date, "%Y-%m-%d")+datetime.timedelta(days=1),
         frequency='1m', 
-        fields=['open', 'close', 'low', 'high', 'volume', 'money', 'factor', 'high_limit','low_limit', 'avg', 'pre_close', 'paused', 'open_interest'])
+        fields=['open', 'close', 'low', 'high', 'volume', 'money', 'factor', 'high_limit','low_limit', 'avg', 'pre_close', 'paused', 'open_interest'],
+        panel=False)
     
     df = df.reset_index()
-    df["index"] = df["index"].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S'))
+    df["trade_date"] = df["index"].apply(lambda x: x.strftime('%Y-%m-%d'))
+    df["trade_time"] = df["index"].apply(lambda x: x.strftime('%H:%M:%S'))
+    df["index"] = df["index"].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S'))  
     df.insert(0, 'code', code)  #最前面插入一列code   
     
+    
     # 统一列名
-    df = df.rename(columns={"index":"date_time",})
+    df = df.rename(columns={"index":"trade_datetime",})
+    print(df)
+    return df
      
 
     

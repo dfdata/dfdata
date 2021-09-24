@@ -2,7 +2,7 @@ import os
 import sqlite3
 import pandas as pd
 from dfdata.util.log import Log
-from dfdata.util.config import Config, KeyWords
+from dfdata.util.config import Config
 from dfdata.util.func_tool import func_time
 
 
@@ -184,14 +184,14 @@ def connection_from_db_name(
     #False表示数据库名称用于读取，不会新建数据库
     if save == False:
         try:
+            print(db_name)
             if os.path.isfile(db_name):
                 conn = sqlite3.connect(db_name)
                 log.info("数据库{}连接成功".format(db_name))
                 return conn
         except Exception as e:   
                 log.erro('数据库连接出错！')
-                raise e
-                
+                return None            
     
     # 数据库名称用于保存，不存在就新建
     s = os.path.split(db_name)
@@ -276,7 +276,7 @@ def db_info(
             db_name = download_path + sqlite_file
             db_info(db=db_name, log_level=log_level, info_brief=True)
               
-    conn = connection_from_db_name(db)
+    conn = connection_from_db_name(db,save=False)
         
     # 查询数据库文件大小
     db_size_mb = os.path.getsize(db)/1024/1024
@@ -320,7 +320,7 @@ def db_info(
             table_line = "-"*80
             table_info_str = "{}{}\n{}\n{}".format(blank_line,table_line,df_result,table_line)
             log.normal(table_info_str)
-        
+
         
     conn.close()
 
@@ -332,7 +332,7 @@ def db_del(
     # 输出日志初始化，
     log = Log(log_level)
         
-    conn = connection_from_db_name(db)
+    conn = connection_from_db_name(db,save=False)
     c = conn.cursor()
     sql = 'drop table {}'.format(table)
     #print('sql = ' + sql)
@@ -366,121 +366,7 @@ def db_diff():
     """
         
         
-        
-################################################################################
-### 数据读取
-################################################################################
 
-def return_function_read_data_in_db(data_kind='futures', data_table='futures_date'):
-    """
-    闭包，返回读取数据库函数
-    
-    参数：
-    data_kind (str)：数据种类，如'futures'
-    data_table (str) : 数据表名称，如'futures_date'
-    
-    示例：
-    read_futures_date = return_function_read_data_in_db(data_kind='futures', table='futures_date')
-    read_futures_date为一个函数，执行该函数里的read_data_in_db函数。
-    """
-    
-    
-    @func_time
-    def read_data_in_db(source, **keywords):
-        """   
-        从数据库读取数据
 
-        Parameters:
-            # 通用参数
-            source (str): 数据源名称
-            db (str) : 数据库名称
-            table (str) : 数据表名称
-            log (str) : log等级，如info, debug等，默认normal,
-            sql (str) : sql语句，如果sql有输入，只支持该查询语句。
-            fields (str or tuple) : 显示字段
-            limit (int or tuple) : 读取数量，如5, (5, 80)
-            
-            # 不固定参数
-            start_date (str or int or datetime) : 开始时间
-            code : 代码
-            
-
-        """   
-
-        #输入参数和默认参数
-        my_keywords = KeyWords(keywords, source_kind=source, data_kind=data_kind, table=data_table, function_kind='read')
-        db =  my_keywords["db"]
-        table =  my_keywords["table"]
-        today_str = my_keywords['today']
-        log_level = my_keywords['log']
-        log = Log(log_level) #初始化log等级
-
-        #函数查询， 默认参数
-        start_date_input = my_keywords['start_date']
-        end_date_input = my_keywords['end_date']
-        code = my_keywords['code']
-        fields = my_keywords['fields']
-        is_open = my_keywords['is_open']
-        exchange = my_keywords['exchange']
-        trade_date = my_keywords['trade_date']
-        limit = my_keywords['limit']
-        sql = my_keywords['sql']
-        
-        #输入中的参数，没输入赋值None，
-        #start_date_input = keywords.get('start_date', None)
-       # end_date_input = keywords.get('end_date', None)
-        #code_input = keywords.get('code', None)
-        #exchange_input = keywords.get('exchange', None)
-       # is_open_input = keywords.get('is_open', None)
-
-        
-
-        #打印参数
-        log.standard('info', db=db, table=table, today=today_str, log_level=log_level) 
-
-        conn = connection_from_db_name(db)
-
-        if log_level in ['info', 'debug']: 
-            db_info(db, table=table, log_level=log_level)
-
-        #日期表生成sql语句
-        if data_table in ['futures_date', ]:  
-            log.debug("日期表生成sql语句")
-            
-            if exchange != None:  #如果交易所参数有输入则只显示该列
-                fields='trade_date' 
-                
-            filter_is_open = sql_filter(exchange, '=', is_open)
-            filter_start_end_date_str = sql_filter_start_end_date('trade_date', start_date_input, end_date_input)
-             
-            where = sql_where(filter_start_end_date_str, filter_is_open) 
-            try:
-                search_sql = get_sql(sql=sql, fields=fields, table=table, where=where, limit=limit, log_level=log_level)
-                log.debug("第一次sql：" + search_sql)
-                df = pd.read_sql_query(search_sql, conn)
-            except:
-                where = sql_where(filter_start_end_date_str)
-                search_sql = get_sql(sql=sql, fields='*', table=table, where=where , limit=limit, log_level=log_level)
-                log.debug("第二次sql：" + search_sql)
-                df = pd.read_sql_query(search_sql, conn)                
-                
-        #其他表生成sql语句
-        else:  
-            log.debug("其他表生成生成sql语句")
-            #生成where语句
-            filter_normal = sql_filters(operator='=', code=code, exchange=exchange, trade_date=trade_date)
-            filter_start_end_date_str = sql_filter_start_end_date('trade_date', start_date_input, end_date_input)   
-            where =sql_where(filter_normal, filter_start_end_date_str)
-            
-            #生成sql语句，如果有输入sql参数，sql语句就为输入语句。否则按fields，table，where，limit四部分生成。
-            search_sql = get_sql(sql=sql, fields=fields, table=table, where=where, limit=limit, log_level=log_level)
-            df = pd.read_sql_query(search_sql, conn)
-
-        #关闭连接，返回结果
-        conn.close()     
-        return df   
-    
-    #返回函数read_data_in_db
-    return read_data_in_db
     
     

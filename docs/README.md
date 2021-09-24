@@ -1,3 +1,17 @@
+## 快速启动
+可以在`docs`目录输入如下命令，启动启动。如果是在Jupyter Lab中输入命令，前面添加`!`。
+```
+# 安装环境，Sphinx、recommonmark、nbsphinx和data-sphinx-theme
+pip install -r requirements.txt
+
+# 清除原来html，重新生成html
+make clean
+make html
+
+# 开启服务
+python web_server.py
+```
+
 ## 安装sphinx
 `pip install sphinx`
 

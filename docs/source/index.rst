@@ -16,14 +16,12 @@ dfdata用于下载金融数据，默认使用sqlite数据库保存数据。
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    
    start/index
    data/index
    data_source/index
    tool/index
-   tutorial/index
-   api/index
    development/index
 
 

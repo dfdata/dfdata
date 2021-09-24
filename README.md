@@ -1,3 +1,3 @@
-# DFdata
-DFdata用于爬取下载金融数据
+# dfdata
+dfdata 用于下载金融数据。
 

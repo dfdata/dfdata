@@ -9,7 +9,7 @@
     :delim: ; 
 
     futures_product; 期货品种表; save_futures_product; read_futures_product
-    futures_contract; 期货合约表; save_futures_contract; read_futures_contract
+    futures_basic; 期货合约表; save_futures_basic; read_futures_basic
     futures_date; 期货日历表; save_futures_date; read_futures_date
     futures_daily; 期货日线表; save_futures_daily; read_futures_daily
     futures_min; 期货分钟表; save_futures_daily; read_futures_daily
@@ -30,7 +30,7 @@
 .. toctree::
     :maxdepth: 2
 
-    futures_contract
+    futures_basic
     futures_product
     futures_exchange
     futures_date

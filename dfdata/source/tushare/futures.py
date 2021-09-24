@@ -2,15 +2,13 @@
 
 import pandas as pd
 import tushare as ts
-from dfdata.util.config import Config
+from dfdata.source.tushare import default_config
 from dfdata.util.func_tool import func_time
 from dfdata.util.log import Log
 
 log = Log()
 
 pro = ts.pro_api()
-
-tushare_config = Config('tushare')
 
 # # 获取Tushare期货数据
 # 期货数据接口：https://tushare.pro/document/2?doc_id=134  
@@ -27,14 +25,14 @@ def get_futures_date(start_date='19901001', end_date=''):
     """
     
     #if start_date == '' : start_date='19901001'
-    exchanges = list(tushare_config.exchange['futures'].keys())
+    exchanges = list(default_config.futures_exchange.keys())
     result = pd.DataFrame(columns=['cal_date',])
     for exchange in exchanges:
         df = pro.trade_cal(exchange=exchange, start_date=start_date, end_date=end_date)
         #print(df.tail())
         df = df.rename(columns={'is_open':exchange})
         df = df[['cal_date', exchange]]
-        result = pd.merge(df,result,on='cal_date',how='outer')
+        result = pd.merge(result,df,on='cal_date',how='outer')
     result = result.sort_values(by='cal_date')
     
     #统一列名称
@@ -43,7 +41,7 @@ def get_futures_date(start_date='19901001', end_date=''):
 
 
 @func_time
-def get_futures_contract():
+def get_futures_basic():
     """
     在线获取Tushare所有期货合约
     
@@ -52,7 +50,7 @@ def get_futures_contract():
     数据接口：https://tushare.pro/document/2?doc_id=135
     """
     
-    exchanges = tushare_config.exchange['futures']  #tushare期货交易所字典 
+    exchanges = default_config.futures_exchange  #tushare期货交易所字典 
     result =pd.DataFrame()
     for exchange, exchange_name in exchanges.items() :
         df = pro.fut_basic(exchange=exchange) 

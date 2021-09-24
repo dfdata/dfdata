@@ -6,8 +6,8 @@
 .. toctree::
    :maxdepth: 2
    
-   stock
-   futures
+   rqdata
+   
    
 
 

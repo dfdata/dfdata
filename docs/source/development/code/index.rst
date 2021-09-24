@@ -3,6 +3,7 @@
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    
    config
+   module_package

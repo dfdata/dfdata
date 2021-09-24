@@ -21,6 +21,6 @@ def app(environ, respond):
         return [b'404 Not Found']
 
 #启动服务器，传入函数app
-httpd = simple_server.make_server('', 8081, app)
-print("Serving HTTP on port 8081...")
+httpd = simple_server.make_server('', 8082, app)
+print("Serving HTTP on port 8082...")
 httpd.serve_forever()
