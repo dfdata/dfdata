@@ -5,13 +5,13 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="dfdata", 
-    version="0.0.5",
-    author="Eric Chen",
-    author_email="eric.chen.2728@gmail.com",
-    description="Download financial data",
+    version="0.0.6",
+    author="dfdata",
+    author_email="dfdata@outlook.com",
+    description="下载金融数据",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/ericlib/dfdata",
+    url="https://github.com/dfdata/dfdata",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",

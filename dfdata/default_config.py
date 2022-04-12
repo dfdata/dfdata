@@ -2,7 +2,7 @@
 # dfdata默认配置
 
 download_path = '~/data/'  #下载位置，默认在用户目录下的dfdata目录
-config_file = "~/configs/dfdata.ini"    #配置文件，默认在用户目录configs/dfdata.ini
+config_file = "~/dfdata.ini"    #配置文件，默认在用户目录dfdata.ini
 log = 'normal'   #配置输出信息等级，默认等级normal
 start_date = '1900-01-01'  #开始时间
 sleep_time = 0.5  

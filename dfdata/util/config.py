@@ -104,6 +104,8 @@ def set_config(section='main', **kwargs):
             v = format_path_str(v, mkdir=True)
         config.set(section, k, v)
 
+    if not os.path.exists(os.path.dirname(comfig_file_expand)) :
+        os.makedirs(comfig_file_expand) 
     with open(comfig_file_expand, 'w') as configfile:
         config.write(configfile) 
     
